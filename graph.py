@@ -1,4 +1,5 @@
 """Graph class using an adjacency list."""
+import csv
 
 
 class Graph():
@@ -28,4 +29,9 @@ class Graph():
         for node in self.adjacency_list[start]:
             if not self.visited[node]:
                 self.depth_first_search(node)
+
+    def get_edges_from_csv(self, file_path):
+        with open(file_path) as file:
+            for edge in csv.reader(file):
+                self.add_edge(edge[0], edge[1])
 
