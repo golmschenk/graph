@@ -5,7 +5,7 @@ class Graph():
     def __init__(self):
         self.number_of_vertices = 0
         self.number_of_edges = 0
-        self.head_nodes = []
+        self.adjacency_list = []
         self.visited = []
 
     def initialize_with_size(self, size):
@@ -22,3 +22,10 @@ class Graph():
         self.visited = []
         for i in range(self.number_of_vertices):
             self.visited.append(False)
+
+    def depth_first_search(self, start):
+        self.visited[start] = True
+        for node in self.adjacency_list[start]:
+            if not self.visited[node]:
+                self.depth_first_search(node)
+
