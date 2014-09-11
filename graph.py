@@ -1,5 +1,6 @@
 """Graph class using an adjacency list."""
 import csv
+from vertex import Vertex
 
 
 class Graph():
@@ -7,33 +8,31 @@ class Graph():
         self.number_of_vertices = 0
         self.number_of_edges = 0
         self.is_weighted = False
-        self.adjacency_list = []
-        self.visited = []
+        self.vertex_list = []
 
     def initialize_with_size(self, size):
         self.number_of_vertices = size
-        self.adjacency_list = []
+        self.vertex_list = []
         for i in range(size):
-            self.adjacency_list.append([])
+            self.vertex_list.append(Vertex(i))
 
     def add_edge(self, vertex1, vertex2):
-        self.adjacency_list[vertex1].append(vertex2)
-        self.adjacency_list[vertex2].append(vertex1)
+        self.vertex_list[vertex1].adjacency_list.append(vertex2)
+        self.vertex_list[vertex2].adjacency_list.append(vertex1)
 
     def add_weighted_edge(self, vertex1, vertex2, weight):
-        self.adjacency_list[vertex1].append((vertex2, weight))
-        self.adjacency_list[vertex2].append((vertex1, weight))
+        self.vertex_list[vertex1].adjacency_list.append((vertex2, weight))
+        self.vertex_list[vertex2].adjacency_list.append((vertex1, weight))
 
     def set_all_vertices_unvisited(self):
-        self.visited = []
-        for i in range(self.number_of_vertices):
-            self.visited.append(False)
+        for vertex in self.vertex_list:
+            vertex.visited = False
 
     def depth_first_search(self, start):
-        self.visited[start] = True
-        for node in self.adjacency_list[start]:
-            if not self.visited[node]:
-                self.depth_first_search(node)
+        self.vertex_list[start].visited = True
+        for vertex_index in self.vertex_list[start].adjacency_list:
+            if not self.vertex_list[vertex_index].adjacency_list:
+                self.depth_first_search(vertex_index)
 
     def get_edges_from_csv(self, file_path):
         with open(file_path) as file:
@@ -43,7 +42,7 @@ class Graph():
 
     def find_number_of_components(self):
         number_of_components = 0
-        for i in range(self.number_of_vertices):
-            if not self.visited[i]:
-                self.depth_first_search(i)
+        for vertex in self.vertex_list:
+            if not vertex.visited:
+                self.depth_first_search(vertex.label)
                 number_of_components += 1
