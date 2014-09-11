@@ -11,13 +11,13 @@ class Graph():
 
     def initialize_with_size(self, size):
         self.number_of_vertices = size
-        self.head_nodes = []
+        self.adjacency_list = []
         for i in range(size):
-            self.head_nodes.append([])
+            self.adjacency_list.append([])
 
     def add_edge(self, vertex1, vertex2):
-        self.head_nodes[vertex1].append(vertex2)
-        self.head_nodes[vertex2].append(vertex1)
+        self.adjacency_list[vertex1].append(vertex2)
+        self.adjacency_list[vertex2].append(vertex1)
 
     def set_all_vertices_unvisited(self):
         self.visited = []
@@ -33,5 +33,6 @@ class Graph():
     def get_edges_from_csv(self, file_path):
         with open(file_path) as file:
             for edge in csv.reader(file):
+                edge = list(map(int, edge))
                 self.add_edge(edge[0], edge[1])
 
