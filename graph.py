@@ -6,6 +6,7 @@ class Graph():
     def __init__(self):
         self.number_of_vertices = 0
         self.number_of_edges = 0
+        self.is_weighted = False
         self.adjacency_list = []
         self.visited = []
 
@@ -18,6 +19,10 @@ class Graph():
     def add_edge(self, vertex1, vertex2):
         self.adjacency_list[vertex1].append(vertex2)
         self.adjacency_list[vertex2].append(vertex1)
+
+    def add_weighted_edge(self, vertex1, vertex2, weight):
+        self.adjacency_list[vertex1].append((vertex2, weight))
+        self.adjacency_list[vertex2].append((vertex1, weight))
 
     def set_all_vertices_unvisited(self):
         self.visited = []
@@ -36,3 +41,9 @@ class Graph():
                 edge = list(map(int, edge))
                 self.add_edge(edge[0], edge[1])
 
+    def find_number_of_components(self):
+        number_of_components = 0
+        for i in range(self.number_of_vertices):
+            if not self.visited[i]:
+                self.depth_first_search(i)
+                number_of_components += 1
