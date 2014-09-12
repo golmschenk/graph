@@ -58,6 +58,19 @@ class Graph():
             graph.add_edge(edge[0], edge[1])
         return graph
 
+    @classmethod
+    def create_weighted_graph_from_csv(cls, file_path):
+        graph = cls()
+        graph.is_weighted = True
+        with open(file_path) as file:
+            edge_list = list(csv.reader(file))
+        graph.number_of_vertices = max([int(edge[i]) for edge in edge_list for i in range(2)]) + 1
+        graph.initialize_with_size(graph.number_of_vertices)
+        for edge in edge_list:
+            edge = list(map(int, edge))
+            graph.add_weighted_edge(edge[0], edge[1], edge[2])
+        return graph
+
     def find_number_of_components(self):
         number_of_components = 0
         for vertex in self.vertex_list:
