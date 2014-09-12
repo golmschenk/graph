@@ -1,6 +1,7 @@
 """Graph class using an adjacency list."""
 import csv
 from vertex import Vertex
+from operator import attrgetter
 
 
 class Graph():
@@ -31,7 +32,7 @@ class Graph():
     def depth_first_search(self, start):
         self.vertex_list[start].visited = True
         for vertex_index in self.vertex_list[start].adjacency_list:
-            if not self.vertex_list[vertex_index].adjacency_list:
+            if not self.vertex_list[vertex_index].visited:
                 self.depth_first_search(vertex_index)
 
     def get_edges_from_csv(self, file_path):
@@ -46,3 +47,23 @@ class Graph():
             if not vertex.visited:
                 self.depth_first_search(vertex.label)
                 number_of_components += 1
+        return number_of_components
+
+    def dijkstra_algorithm(self, start):
+        self.vertex_list[start].visited = True
+        #Update adjacent vertices' weights.
+        for adjacent_edge in self.vertex_list[start].adjacency_list:
+            if not self.vertex_list[adjacent_edge[0]].visited:
+                if adjacent_edge[1] + self.vertex_list[start].value < self.vertex_list[adjacent_edge[0]].value:
+                    self.vertex_list[adjacent_edge[0]].value = adjacent_edge[1] + self.vertex_list[start].value
+                    self.vertex_list[adjacent_edge[0]].parent = start
+        unvisited_vertex_list = [vertex for vertex in self.vertex_list if not vertex.visited]
+        if unvisited_vertex_list:
+            minimum_value_vertex = min(unvisited_vertex_list, key=attrgetter('value'))
+            self.dijkstra_algorithm(minimum_value_vertex.label)
+
+
+
+
+
+
