@@ -45,6 +45,18 @@ class Graph():
                 edge = list(map(int, edge))
                 self.add_edge(edge[0], edge[1])
 
+    @classmethod
+    def create_graph_from_csv(cls, file_path):
+        graph = cls()
+        with open(file_path) as file:
+            edge_list = csv.reader(file)
+        graph.number_of_vertices = max([vertex_intex for edge in edge_list for vertex_intex in edge])
+        graph.initialize_with_size(graph.number_of_vertices)
+        for edge in edge_list:
+            edge = list(map(int, edge))
+            graph.add_edge(edge[0], edge[1])
+        return graph
+
     def find_number_of_components(self):
         number_of_components = 0
         for vertex in self.vertex_list:
