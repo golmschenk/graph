@@ -1,4 +1,5 @@
 """Graph class using an adjacency list."""
+import copy
 import csv
 from vertex import Vertex
 from operator import attrgetter
@@ -36,7 +37,7 @@ class Graph():
             if not self.vertex_list[vertex_index].visited:
                 self.depth_first_search(vertex_index)
             else:
-                if self.vertex_list[start].parent == vertex_index:
+                if self.vertex_list[start].parent != vertex_index:
                     self.has_a_cycle = True
 
     def get_edges_from_csv(self, file_path):
@@ -49,8 +50,8 @@ class Graph():
     def create_graph_from_csv(cls, file_path):
         graph = cls()
         with open(file_path) as file:
-            edge_list = csv.reader(file)
-        graph.number_of_vertices = max([vertex_intex for edge in edge_list for vertex_intex in edge])
+            edge_list = list(csv.reader(file))
+        graph.number_of_vertices = max([int(vertex_index) for edge in edge_list for vertex_index in edge]) + 1
         graph.initialize_with_size(graph.number_of_vertices)
         for edge in edge_list:
             edge = list(map(int, edge))
