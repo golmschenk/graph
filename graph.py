@@ -9,6 +9,7 @@ class Graph():
         self.number_of_vertices = 0
         self.number_of_edges = 0
         self.is_weighted = False
+        self.has_a_cycle = False
         self.vertex_list = []
 
     def initialize_with_size(self, size):
@@ -34,6 +35,9 @@ class Graph():
         for vertex_index in self.vertex_list[start].adjacency_list:
             if not self.vertex_list[vertex_index].visited:
                 self.depth_first_search(vertex_index)
+            else:
+                if self.vertex_list[start].parent == vertex_index:
+                    self.has_a_cycle = True
 
     def get_edges_from_csv(self, file_path):
         with open(file_path) as file:
