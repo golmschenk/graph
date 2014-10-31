@@ -9,7 +9,8 @@ class Graph():
     def __init__(self):
         self.number_of_vertices = 0
         self.number_of_edges = 0
-        self.is_weighted = False
+        self.using_weight = False
+        self.using_reliability = False
         self.has_a_cycle = False
         self.vertex_list = []
 
@@ -26,6 +27,14 @@ class Graph():
     def add_weighted_edge(self, vertex1, vertex2, weight):
         self.vertex_list[vertex1].adjacency_list.append((vertex2, weight))
         self.vertex_list[vertex2].adjacency_list.append((vertex1, weight))
+
+    def add_reliability_edge(self, vertex1, vertex2, reliability):
+        self.vertex_list[vertex1].adjacency_list.append((vertex2, reliability))
+        self.vertex_list[vertex2].adjacency_list.append((vertex1, reliability))
+
+    def add_weighted_reliability_edge(self, vertex1, vertex2, reliability, weight):
+        self.vertex_list[vertex1].adjacency_list.append((vertex2, reliability, weight))
+        self.vertex_list[vertex2].adjacency_list.append((vertex1, reliability, weight))
 
     def set_all_vertices_unvisited(self):
         for vertex in self.vertex_list:
@@ -61,7 +70,7 @@ class Graph():
     @classmethod
     def create_weighted_graph_from_csv(cls, file_path):
         graph = cls()
-        graph.is_weighted = True
+        graph.using_weight = True
         with open(file_path) as file:
             edge_list = list(csv.reader(file))
         graph.number_of_vertices = max([int(edge[i]) for edge in edge_list for i in range(2)]) + 1
