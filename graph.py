@@ -119,7 +119,19 @@ class Graph():
     def attain_reliability_for_diameter(self):
         pass
 
-
+    def clone_graph_with_edge_removed(self, edge):
+        subgraph = Graph()
+        subgraph.number_of_vertices = self.number_of_vertices
+        subgraph.number_of_edges = self.number_of_edges - 1
+        subgraph.using_reliability = self.using_reliability
+        subgraph.using_weight = self.using_weight
+        subgraph.vertex_list = copy.deepcopy(self.vertex_list)
+        for vertex in subgraph.vertex_list:
+            if vertex.label in edge:
+                for adjacent_edge in vertex.adjacency_list:
+                    if adjacent_edge[0] in edge:
+                        vertex.adjacency_list.remove(adjacent_edge)
+        return subgraph
 
 
 
