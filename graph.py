@@ -40,7 +40,7 @@ class Graph():
         for vertex in self.vertex_list:
             vertex.visited = False
 
-    def depth_first_search(self, start):
+    def simple_depth_first_search(self, start):
         self.vertex_list[start].visited = True
         for vertex_index in self.vertex_list[start].adjacency_list:
             if not self.vertex_list[vertex_index].visited:
@@ -48,6 +48,10 @@ class Graph():
             else:
                 if self.vertex_list[start].parent != vertex_index:
                     self.has_a_cycle = True
+
+    def depth_first_search(self, start):
+        if not self.using_reliability and not self.using_weight:
+            self.simple_depth_first_search(start)
 
     def get_edges_from_csv(self, file_path):
         with open(file_path) as file:
@@ -100,6 +104,8 @@ class Graph():
         if unvisited_vertex_list:
             minimum_value_vertex = min(unvisited_vertex_list, key=attrgetter('value'))
             self.dijkstra_algorithm(minimum_value_vertex.label)
+
+
 
 
 
