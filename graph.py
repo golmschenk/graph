@@ -52,6 +52,7 @@ class Graph():
         self.vertex_list[start].visited = True
         for vertex_index in self.vertex_list[start].adjacency_list:
             if not self.vertex_list[vertex_index].visited:
+                self.vertex_list[vertex_index].parent = start
                 self.depth_first_search(vertex_index)
             else:
                 self.has_a_cycle = True
