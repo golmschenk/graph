@@ -46,11 +46,21 @@ class Graph():
             if not self.vertex_list[vertex_index].visited:
                 self.depth_first_search(vertex_index)
             else:
-                if self.vertex_list[start].parent != vertex_index:
-                    self.has_a_cycle = True
+                self.has_a_cycle = True
+
+    def reliability_depth_first_search(self, start):
+        self.vertex_list[start].visited = True
+        for vertex_index in self.vertex_list[start].adjacency_list:
+            if not self.vertex_list[vertex_index].visited:
+                self.depth_first_search(vertex_index)
+            else:
+                self.has_a_cycle = True
+
 
     def depth_first_search(self, start):
-        if not self.using_reliability and not self.using_weight:
+        if self.using_reliability:
+            self.reliability_depth_first_search(start)
+        else:
             self.simple_depth_first_search(start)
 
     def get_edges_from_csv(self, file_path):
@@ -105,7 +115,8 @@ class Graph():
             minimum_value_vertex = min(unvisited_vertex_list, key=attrgetter('value'))
             self.dijkstra_algorithm(minimum_value_vertex.label)
 
-
+    def attain_reliability_for_diameter(self):
+        pass
 
 
 
