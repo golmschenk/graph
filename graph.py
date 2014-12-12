@@ -103,6 +103,19 @@ class Graph():
             graph.add_weighted_edge(edge[0], edge[1], edge[2])
         return graph
 
+    @classmethod
+    def create_reliability_graph_from_csv(cls, file_path):
+        graph = cls()
+        graph.using_reliability = True
+        with open(file_path) as file:
+            edge_list = list(csv.reader(file))
+        graph.number_of_vertices = max([int(edge[i]) for edge in edge_list for i in range(2)]) + 1
+        graph.initialize_with_size(graph.number_of_vertices)
+        for edge in edge_list:
+            edge = [int(edge[0]), int(edge[1]), float(edge[2])]
+            graph.add_reliability_edge(edge[0], edge[1], edge[2])
+        return graph
+
     def find_number_of_components(self):
         number_of_components = 0
         for vertex in self.vertex_list:
@@ -125,12 +138,13 @@ class Graph():
             self.dijkstra_algorithm(minimum_value_vertex.label)
 
     def attain_reliability_for_diameter(self, diameter):
-        self.depth_first_search(self.vertex_list[0])
+        self.depth_first_search(0)
         if not self.vertex_list[self.number_of_vertices - 1].visited:
             return 0
         else:
             # Check if within diameter.
             vertex_index = self.number_of_vertices - 1
+            reached = False
             for i in range(diameter):
                 if self.vertex_list[vertex_index].parent == 0:
                     reached = True
@@ -144,10 +158,12 @@ class Graph():
                     reliability *= (1 - edge.reliability)
                 else:
                     reliability *= edge.reliability
+            print("Current reliability %f" % reliability)
             # Add the reliability of the subgraphs.
             for edge in self.edge_list:
-                subgraph = self.clone_with_edge_removed(edge)
-                reliability += subgraph.attain_reliability_for_diameter(diameter)
+                if not edge.removed:
+                    subgraph = self.clone_with_edge_removed(edge)
+                    reliability += subgraph.attain_reliability_for_diameter(diameter)
             return reliability
 
 
@@ -159,15 +175,19 @@ class Graph():
         subgraph.using_reliability = self.using_reliability
         subgraph.using_weight = self.using_weight
         subgraph.vertex_list = copy.deepcopy(self.vertex_list)
+        subgraph.set_all_vertices_unvisited()
         subgraph.edge_list = copy.deepcopy(self.edge_list)
         #Remove the edge
         for edge in subgraph.edge_list:
             if edge.vertex_list == edge_to_remove.vertex_list:
-                subgraph.vertex_list[edge.vertex_list[0]].remove(edge.vertex_list[1])
-                subgraph.vertex_list[edge.vertex_list[1]].remove(edge.vertex_list[0])
+                subgraph.vertex_list[edge.vertex_list[0]].adjacency_list.remove(edge.vertex_list[1])
+                subgraph.vertex_list[edge.vertex_list[1]].adjacency_list.remove(edge.vertex_list[0])
                 edge.removed = True
         return subgraph
 
 
-
-
+if __name__ == "__main__":
+    graph = Graph()
+    graph = Graph.create_reliability_graph_from_csv("examplegraphs/half_success_mini_graph.csv")
+    r = graph.attain_reliability_for_diameter(2)
+    print(r)
