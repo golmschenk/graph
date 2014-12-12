@@ -13,6 +13,9 @@ class Graph():
         self.using_reliability = False
         self.has_a_cycle = False
         self.vertex_list = []
+        self.removed_edge_probability_list = []
+        self.removed_edge_list = []
+        self.edge_list = []
 
     def initialize_with_size(self, size):
         self.number_of_vertices = size
@@ -116,10 +119,28 @@ class Graph():
             minimum_value_vertex = min(unvisited_vertex_list, key=attrgetter('value'))
             self.dijkstra_algorithm(minimum_value_vertex.label)
 
-    def attain_reliability_for_diameter(self):
-        pass
+    def attain_reliability_for_diameter(self, diameter):
+        self.depth_first_search()
+        if not self.vertex_list[self.number_of_vertices - 1].visited:
+            return 0
+        else:
+            # Check if within diameter.
+            vertex_index = self.number_of_vertices - 1
+            for i in range(diameter):
+                if self.vertex_list[vertex_index].parent == 0:
+                    reached = True
+                    break
+            if not reached:
+                return 0
+            # Get the reliability of this graph.
+            reliability = 0
 
-    def clone_graph_with_edge_removed(self, edge):
+            for vertex in self.vertex_list:
+                for adjacent_edge in vertex.adjacency_list:
+
+
+
+    def clone_with_edge_removed(self, edge):
         subgraph = Graph()
         subgraph.number_of_vertices = self.number_of_vertices
         subgraph.number_of_edges = self.number_of_edges - 1
