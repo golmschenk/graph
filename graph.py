@@ -125,7 +125,7 @@ class Graph():
             self.dijkstra_algorithm(minimum_value_vertex.label)
 
     def attain_reliability_for_diameter(self, diameter):
-        self.depth_first_search()
+        self.depth_first_search(self.vertex_list[0])
         if not self.vertex_list[self.number_of_vertices - 1].visited:
             return 0
         else:
@@ -138,10 +138,16 @@ class Graph():
             if not reached:
                 return 0
             # Get the reliability of this graph.
-            reliability = 0
-
-            for vertex in self.vertex_list:
-                for adjacent_edge in vertex.adjacency_list:
+            reliability = 1
+            for edge in self.edge_list:
+                if edge.removed:
+                    reliability *= (1 - edge.reliability)
+                else:
+                    reliability *= edge.reliability
+            # Add the reliability of the subgraphs.
+            for edge in self.edge_list:
+                subgraph = self.clone_with_edge_removed(edge)
+                reliability += subgraph.attain_reliability_for_diameter(diameter)
 
 
 
