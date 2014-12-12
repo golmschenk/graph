@@ -1,6 +1,7 @@
 """Graph class using an adjacency list."""
 import copy
 import csv
+from edge import Edge
 from vertex import Vertex
 from operator import attrgetter
 
@@ -26,18 +27,22 @@ class Graph():
     def add_edge(self, vertex1, vertex2):
         self.vertex_list[vertex1].adjacency_list.append(vertex2)
         self.vertex_list[vertex2].adjacency_list.append(vertex1)
+        self.edge_list.append(Edge(vertex1, vertex2))
 
     def add_weighted_edge(self, vertex1, vertex2, weight):
-        self.vertex_list[vertex1].adjacency_list.append((vertex2, weight))
-        self.vertex_list[vertex2].adjacency_list.append((vertex1, weight))
+        self.vertex_list[vertex1].adjacency_list.append(vertex2)
+        self.vertex_list[vertex2].adjacency_list.append(vertex1)
+        self.edge_list.append(Edge(vertex1, vertex2, weight=weight))
 
     def add_reliability_edge(self, vertex1, vertex2, reliability):
-        self.vertex_list[vertex1].adjacency_list.append((vertex2, reliability))
-        self.vertex_list[vertex2].adjacency_list.append((vertex1, reliability))
+        self.vertex_list[vertex1].adjacency_list.append(vertex2)
+        self.vertex_list[vertex2].adjacency_list.append(vertex1)
+        self.edge_list.append(Edge(vertex1, vertex2, reliability=reliability))
 
     def add_weighted_reliability_edge(self, vertex1, vertex2, reliability, weight):
-        self.vertex_list[vertex1].adjacency_list.append((vertex2, reliability, weight))
-        self.vertex_list[vertex2].adjacency_list.append((vertex1, reliability, weight))
+        self.vertex_list[vertex1].adjacency_list.append(vertex2)
+        self.vertex_list[vertex2].adjacency_list.append(vertex1)
+        self.edge_list.append(Edge(vertex1, vertex2, reliability=reliability, weight=weight))
 
     def set_all_vertices_unvisited(self):
         for vertex in self.vertex_list:
@@ -140,18 +145,20 @@ class Graph():
 
 
 
-    def clone_with_edge_removed(self, edge):
+    def clone_with_edge_removed(self, edge_to_remove):
         subgraph = Graph()
         subgraph.number_of_vertices = self.number_of_vertices
         subgraph.number_of_edges = self.number_of_edges - 1
         subgraph.using_reliability = self.using_reliability
         subgraph.using_weight = self.using_weight
         subgraph.vertex_list = copy.deepcopy(self.vertex_list)
-        for vertex in subgraph.vertex_list:
-            if vertex.label in edge:
-                for adjacent_edge in vertex.adjacency_list:
-                    if adjacent_edge[0] in edge:
-                        vertex.adjacency_list.remove(adjacent_edge)
+        subgraph.edge_list = copy.deepcopy(self.edge_list)
+        #Remove the edge
+        for edge in subgraph.edge_list:
+            if edge.vertex_list == edge_to_remove.vertex_list:
+                subgraph.vertex_list[edge.vertex_list[0]].remove(edge.vertex_list[1])
+                subgraph.vertex_list[edge.vertex_list[1]].remove(edge.vertex_list[0])
+                edge.removed = True
         return subgraph
 
 
