@@ -148,6 +148,7 @@ class Graph():
             for edge in self.edge_list:
                 subgraph = self.clone_with_edge_removed(edge)
                 reliability += subgraph.attain_reliability_for_diameter(diameter)
+            return reliability
 
 
 
