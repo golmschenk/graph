@@ -15,9 +15,8 @@ class Graph():
         self.using_reliability = False
         self.has_a_cycle = False
         self.vertex_list = []
-        self.removed_edge_probability_list = []
-        self.removed_edge_list = []
         self.edge_list = []
+        self.queue = []
 
     def initialize_with_size(self, size):
         self.number_of_vertices = size
@@ -65,6 +64,28 @@ class Graph():
                 self.depth_first_search(vertex_index)
             else:
                 self.has_a_cycle = True
+
+    def breadth_first_search(self, start):
+        self.vertex_list[start].visited = True
+        if self.vertex_list[start].parent == -1:
+            self.vertex_list[start].value = 0
+        for vertex_index in self.vertex_list[start].adjacency_list:
+            if not self.vertex_list[vertex_index].visited:
+                edge_vertex_list = [start, vertex_index]
+                edge_vertex_list.sort()
+                edge = next((x for x in self.edge_list if x.vertex_list == edge_vertex_list), "Not here")
+                current_value = self.vertex_list[start].value + edge.weight
+                if current_value < self.vertex_list[vertex_index].value:
+                    self.vertex_list[vertex_index].parent = start
+                    self.vertex_list[vertex_index].value = current_value
+                    self.queue.append([vertex_index, current_value])
+        if len(self.queue):
+            self.queue.sort(key=lambda entry: entry[1])
+            next_vertex = self.queue.pop(0)[0]
+            self.breadth_first_search(next_vertex)
+            return
+        else:
+            return
 
 
     def depth_first_search(self, start):
