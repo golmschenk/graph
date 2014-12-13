@@ -182,18 +182,11 @@ class Graph():
             self.dijkstra_algorithm(minimum_value_vertex.label)
 
     def attain_reliability_for_diameter(self, diameter):
-        self.depth_first_search(0)
+        self.breadth_first_search(0)
         if not self.vertex_list[self.number_of_vertices - 1].visited:
             return 0
         else:
-            # Check if within diameter.
-            vertex_index = self.number_of_vertices - 1
-            reached = False
-            for i in range(diameter):
-                if self.vertex_list[vertex_index].parent == 0:
-                    reached = True
-                    break
-            if not reached:
+            if diameter < self.vertex_list[self.number_of_vertices - 1].value:
                 return 0
             # Get the reliability of this graph.
             reliability = 1
@@ -210,7 +203,12 @@ class Graph():
                     reliability += subgraph.attain_reliability_for_diameter(diameter)
             return reliability
 
-
+    def reset_all_vertices(self):
+        self.set_all_vertices_unvisited()
+        for vertex in self.vertex_list:
+            vertex.parent = -1
+        for vertex in self.vertex_list:
+            vertex.value = float("inf")
 
     def clone_with_edge_removed(self, edge_to_remove):
         subgraph = Graph()
@@ -219,7 +217,7 @@ class Graph():
         subgraph.using_reliability = self.using_reliability
         subgraph.using_weight = self.using_weight
         subgraph.vertex_list = copy.deepcopy(self.vertex_list)
-        subgraph.set_all_vertices_unvisited()
+        subgraph.reset_all_vertices()
         subgraph.edge_list = copy.deepcopy(self.edge_list)
         #Remove the edge
         for edge in subgraph.edge_list:
@@ -231,7 +229,10 @@ class Graph():
 
 
 if __name__ == "__main__":
-    #graph = Graph.create_reliability_graph_from_csv("examplegraphs/quarter_success_mini_graph.csv")
-    graph = Graph.create_reliability_graph_from_csv("examplegraphs/basic_wireless_mesh_graph.csv")
+    graph = Graph.create_reliability_graph_from_csv("examplegraphs/quarter_success_mini_graph.csv")
+    #graph = Graph.create_reliability_graph_from_csv("examplegraphs/basic_wireless_mesh_graph.csv")
     r = graph.attain_reliability_for_diameter(4)
     print(r)
+    #graph = Graph.create_weighted_graph_from_csv("examplegraphs/basic_weighted_graph.csv")
+    #graph.breadth_first_search(0)
+    #print('go')
