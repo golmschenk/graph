@@ -1,6 +1,7 @@
 """Graph class using an adjacency list."""
 import copy
 import csv
+import math
 from edge import Edge
 from vertex import Vertex
 from operator import attrgetter
@@ -116,6 +117,28 @@ class Graph():
             graph.add_reliability_edge(edge[0], edge[1], edge[2])
         return graph
 
+    @classmethod
+    def create_wireless_mesh_graph_from_csv(cls, file_path):
+        graph = cls()
+        graph.using_reliability = True
+        graph.using_weight = True
+        with open(file_path) as file:
+            position_list = list(csv.reader(file))
+        i = 0
+        #Create all the vertices
+        for position_string in position_list:
+            position = [float(position_string[0]), float(position_string[1])]
+            graph.vertex_list.append(Vertex(i, position=position))
+            graph.number_of_vertices += 1
+        #Create the wireless mesh edges.
+        for vertex1 in graph.vertex_list:
+            for vertex2 in graph.vertex_list:
+                if vertex1 is not vertex2:
+                    distance = math.hypot(vertex2.position[0]-vertex1.position[0], vertex2.position[1]-vertex2.position[1])
+                    reliability = 1 - (0.001 * (distance**2))
+                    graph.add_weighted_reliability_edge(vertex1.label, vertex2.label, reliability, distance)
+        return graph
+
     def find_number_of_components(self):
         number_of_components = 0
         for vertex in self.vertex_list:
@@ -187,7 +210,7 @@ class Graph():
 
 
 if __name__ == "__main__":
-    graph = Graph()
-    graph = Graph.create_reliability_graph_from_csv("examplegraphs/half_success_mini_graph.csv")
-    r = graph.attain_reliability_for_diameter(2)
+    #graph = Graph.create_reliability_graph_from_csv("examplegraphs/quarter_success_mini_graph.csv")
+    graph = Graph.create_reliability_graph_from_csv("examplegraphs/basic_wireless_mesh_graph.csv")
+    r = graph.attain_reliability_for_diameter(4)
     print(r)
