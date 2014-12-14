@@ -110,13 +110,7 @@ class Interface:
         terminal_string = input("Enter nothing for final node as only terminal: ")
         if terminal_string:
             terminal_list = map(int, terminal_string.split(' '))
-            self.graph.attain_reliability_for_diameter(diameter, terminal_list)
+            reliability = self.graph.attain_reliability_for_diameter(diameter, terminal_list)
         else:
-            self.graph.attain_reliability_for_diameter(diameter)
-
-
-
-
-
-
-
+            reliability = self.graph.attain_reliability_for_diameter(diameter)
+        print("The graph reliability is %f" % reliability)

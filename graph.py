@@ -210,7 +210,7 @@ class Graph():
         if not all(self.vertex_list[terminal_index].visited for terminal_index in terminal_list):
             return 0
         else:
-            if diameter < all(self.vertex_list[terminal_index].value for terminal_index in terminal_list):
+            if all(diameter < self.vertex_list[terminal_index].value for terminal_index in terminal_list):
                 return 0
             # Get the reliability of this graph.
             reliability = 1
