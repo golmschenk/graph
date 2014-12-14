@@ -37,9 +37,11 @@ class Graph():
         self.vertex_list[start].visited = True
         for vertex_index in self.vertex_list[start].adjacency_list:
             if not self.vertex_list[vertex_index].visited:
+                self.vertex_list[vertex_index].parent = start
                 self.depth_first_search(vertex_index)
             else:
-                self.has_a_cycle = True
+                if self.vertex_list[start].parent != vertex_index:
+                    self.has_a_cycle = True
 
     def reliability_depth_first_search(self, start):
         self.vertex_list[start].visited = True
@@ -86,7 +88,7 @@ class Graph():
                 self.add_edge(edge[0], edge[1])
 
     def check_for_cycles(self):
-        self.depth_first_search()
+        self.depth_first_search(0)
         return self.has_a_cycle
 
     def display_shortest_paths(self):
@@ -236,6 +238,7 @@ class Graph():
         for edge in self.edge_list:
             edge.removed = False
         self.queue = []
+        self.has_a_cycle = False
 
     def clone_with_edge_removed(self, edge_to_remove):
         subgraph = Graph()

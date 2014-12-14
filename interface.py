@@ -67,6 +67,7 @@ class Interface:
             else:
                 weight = 1.0
             self.graph.add_edge(edge[0], edge[1], reliability=reliability, weight=weight)
+            i += 1
 
     def load_graph_from_file_prompt(self):
         corrdinates = False
@@ -97,7 +98,11 @@ class Interface:
             self.graph = Graph.create_graph_from_csv(user_input)
 
     def check_for_cycles(self):
-        self.graph.check_for_cycles()
+        has_cycle = self.graph.check_for_cycles()
+        if has_cycle:
+            print("Has a cycle.")
+        else:
+            print("No cycles.")
 
     def find_reliability(self):
         diameter = float(input("Enter a diameter: "))
