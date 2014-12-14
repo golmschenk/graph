@@ -151,13 +151,20 @@ class Graph():
             position = [float(position_string[0]), float(position_string[1])]
             graph.vertex_list.append(Vertex(i, position=position))
             graph.number_of_vertices += 1
+            i += 1
         #Create the wireless mesh edges.
-        for vertex1 in graph.vertex_list:
-            for vertex2 in graph.vertex_list:
+        i = 0
+        while i < len(graph.vertex_list):
+            j = i + 1
+            while j < len(graph.vertex_list):
+                vertex1 = graph.vertex_list[i]
+                vertex2 = graph.vertex_list[j]
                 if vertex1 is not vertex2:
                     distance = math.hypot(vertex2.position[0]-vertex1.position[0], vertex2.position[1]-vertex2.position[1])
                     reliability = 1 - (0.001 * (distance**2))
                     graph.add_weighted_reliability_edge(vertex1.label, vertex2.label, reliability, distance)
+                j += 1
+            i += 1
         return graph
 
     def find_number_of_components(self):
@@ -181,12 +188,14 @@ class Graph():
             minimum_value_vertex = min(unvisited_vertex_list, key=attrgetter('value'))
             self.dijkstra_algorithm(minimum_value_vertex.label)
 
-    def attain_reliability_for_diameter(self, diameter):
+    def attain_reliability_for_diameter(self, diameter, terminal_list=None):
+        if not terminal_list:
+            terminal_list = [self.number_of_vertices - 1]
         self.breadth_first_search(0)
-        if not self.vertex_list[self.number_of_vertices - 1].visited:
+        if not all(self.vertex_list[terminal_index].visited for terminal_index in terminal_list):
             return 0
         else:
-            if diameter < self.vertex_list[self.number_of_vertices - 1].value:
+            if diameter < all(self.vertex_list[terminal_index].value for terminal_index in terminal_list):
                 return 0
             # Get the reliability of this graph.
             reliability = 1
@@ -195,12 +204,11 @@ class Graph():
                     reliability *= (1 - edge.reliability)
                 else:
                     reliability *= edge.reliability
-            print("Current reliability %f" % reliability)
             # Add the reliability of the subgraphs.
             for edge in self.edge_list:
                 if not edge.removed:
                     subgraph = self.clone_with_edge_removed(edge)
-                    reliability += subgraph.attain_reliability_for_diameter(diameter)
+                    reliability += subgraph.attain_reliability_for_diameter(diameter, terminal_list=terminal_list)
             return reliability
 
     def reset_all_vertices(self):
@@ -230,8 +238,8 @@ class Graph():
 
 if __name__ == "__main__":
     graph = Graph.create_reliability_graph_from_csv("examplegraphs/quarter_success_mini_graph.csv")
-    #graph = Graph.create_reliability_graph_from_csv("examplegraphs/basic_wireless_mesh_graph.csv")
-    r = graph.attain_reliability_for_diameter(4)
+    #graph = Graph.create_wireless_mesh_graph_from_csv("examplegraphs/basic_wireless_mesh_graph.csv")
+    r = graph.attain_reliability_for_diameter(4, terminal_list=[1,2])
     print(r)
     #graph = Graph.create_weighted_graph_from_csv("examplegraphs/basic_weighted_graph.csv")
     #graph.breadth_first_search(0)
