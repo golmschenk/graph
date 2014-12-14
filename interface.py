@@ -109,7 +109,7 @@ class Interface:
         print('Enter a list of terminals separated by spaces.')
         terminal_string = input("Enter nothing for final node as only terminal: ")
         if terminal_string:
-            terminal_list = map(int, terminal_string.split(' '))
+            terminal_list = list(map(int, terminal_string.split(' ')))
             reliability = self.graph.attain_reliability_for_diameter(diameter, terminal_list)
         else:
             reliability = self.graph.attain_reliability_for_diameter(diameter)
