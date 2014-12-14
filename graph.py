@@ -24,22 +24,7 @@ class Graph():
         for i in range(size):
             self.vertex_list.append(Vertex(i))
 
-    def add_edge(self, vertex1, vertex2):
-        self.vertex_list[vertex1].adjacency_list.append(vertex2)
-        self.vertex_list[vertex2].adjacency_list.append(vertex1)
-        self.edge_list.append(Edge(vertex1, vertex2))
-
-    def add_weighted_edge(self, vertex1, vertex2, weight):
-        self.vertex_list[vertex1].adjacency_list.append(vertex2)
-        self.vertex_list[vertex2].adjacency_list.append(vertex1)
-        self.edge_list.append(Edge(vertex1, vertex2, weight=weight))
-
-    def add_reliability_edge(self, vertex1, vertex2, reliability):
-        self.vertex_list[vertex1].adjacency_list.append(vertex2)
-        self.vertex_list[vertex2].adjacency_list.append(vertex1)
-        self.edge_list.append(Edge(vertex1, vertex2, reliability=reliability))
-
-    def add_weighted_reliability_edge(self, vertex1, vertex2, reliability, weight):
+    def add_edge(self, vertex1, vertex2, reliability=1.0, weight=1.0):
         self.vertex_list[vertex1].adjacency_list.append(vertex2)
         self.vertex_list[vertex2].adjacency_list.append(vertex1)
         self.edge_list.append(Edge(vertex1, vertex2, reliability=reliability, weight=weight))
@@ -100,6 +85,21 @@ class Graph():
                 edge = list(map(int, edge))
                 self.add_edge(edge[0], edge[1])
 
+    def check_for_cycles(self):
+        self.depth_first_search()
+        return self.has_a_cycle
+
+    def display_shortest_paths(self):
+        source = 0
+        self.dijkstra_algorithm(source)
+        for vertex_index in self.vertex_list:
+            path_string = str(vertex_index)
+            current_index = vertex_index
+            while current_index != -1:
+                current_index = self.vertex_list[vertex_index]
+                path_string = str(current_index) + ',' + path_string
+            print(path_string)
+
     @classmethod
     def create_graph_from_csv(cls, file_path):
         graph = cls()
@@ -122,7 +122,7 @@ class Graph():
         graph.initialize_with_size(graph.number_of_vertices)
         for edge in edge_list:
             edge = list(map(int, edge))
-            graph.add_weighted_edge(edge[0], edge[1], edge[2])
+            graph.add_edge(edge[0], edge[1], weight=edge[2])
         return graph
 
     @classmethod
@@ -135,7 +135,20 @@ class Graph():
         graph.initialize_with_size(graph.number_of_vertices)
         for edge in edge_list:
             edge = [int(edge[0]), int(edge[1]), float(edge[2])]
-            graph.add_reliability_edge(edge[0], edge[1], edge[2])
+            graph.add_edge(edge[0], edge[1], reliability=edge[2])
+        return graph
+
+    @classmethod
+    def create_reliability_weighted_graph_from_csv(cls, file_path):
+        graph = cls()
+        graph.using_reliability = True
+        with open(file_path) as file:
+            edge_list = list(csv.reader(file))
+        graph.number_of_vertices = max([int(edge[i]) for edge in edge_list for i in range(2)]) + 1
+        graph.initialize_with_size(graph.number_of_vertices)
+        for edge in edge_list:
+            edge = [int(edge[0]), int(edge[1]), float(edge[2]), float(edge[3])]
+            graph.add_edge(edge[0], edge[1], reliability=edge[2], weight=edge[3])
         return graph
 
     @classmethod
@@ -162,7 +175,7 @@ class Graph():
                 if vertex1 is not vertex2:
                     distance = math.hypot(vertex2.position[0]-vertex1.position[0], vertex2.position[1]-vertex2.position[1])
                     reliability = 1 - (0.001 * (distance**2))
-                    graph.add_weighted_reliability_edge(vertex1.label, vertex2.label, reliability, distance)
+                    graph.add_edge(vertex1.label, vertex2.label, reliability=reliability, weight=distance)
                 j += 1
             i += 1
         return graph
@@ -217,6 +230,12 @@ class Graph():
             vertex.parent = -1
         for vertex in self.vertex_list:
             vertex.value = float("inf")
+
+    def reset_graph(self):
+        self.reset_all_vertices()
+        for edge in self.edge_list:
+            edge.removed = False
+        self.queue = []
 
     def clone_with_edge_removed(self, edge_to_remove):
         subgraph = Graph()
