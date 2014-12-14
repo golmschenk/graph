@@ -94,12 +94,15 @@ class Graph():
     def display_shortest_paths(self):
         source = 0
         self.dijkstra_algorithm(source)
-        for vertex_index in self.vertex_list:
-            path_string = str(vertex_index)
-            current_index = vertex_index
+        for vertex in self.vertex_list:
+            current_index = vertex.label
+            path_string = ""
             while current_index != -1:
-                current_index = self.vertex_list[vertex_index]
-                path_string = str(current_index) + ',' + path_string
+                if path_string == "":
+                    path_string = str(current_index)
+                else:
+                    path_string = str(current_index) + ',' + path_string
+                current_index = self.vertex_list[current_index].parent
             print(path_string)
 
     @classmethod
@@ -190,7 +193,7 @@ class Graph():
                 number_of_components += 1
         return number_of_components
 
-    def dijkstra_algorithm(self, start):
+    '''def dijkstra_algorithm(self, start):
         self.vertex_list[start].visited = True
         #Update adjacent vertices' weights.
         for adjacent_edge in self.vertex_list[start].adjacency_list:
@@ -201,7 +204,33 @@ class Graph():
         unvisited_vertex_list = [vertex for vertex in self.vertex_list if not vertex.visited]
         if unvisited_vertex_list:
             minimum_value_vertex = min(unvisited_vertex_list, key=attrgetter('value'))
-            self.dijkstra_algorithm(minimum_value_vertex.label)
+            self.dijkstra_algorithm(minimum_value_vertex.label)'''
+
+    def dijkstra_algorithm(self, start):
+        self.vertex_list[start].value = 0
+        self.dijkstra_algorithm_helper(start)
+        for vertex in self.vertex_list:
+            if not vertex.visited:
+                self.vertex_list[vertex.label].value = 0
+                self.dijkstra_algorithm_helper(vertex.label)
+
+    def dijkstra_algorithm_helper(self, start):
+        self.vertex_list[start].visited = True
+        #Update adjacent vertices' weights.
+        for adjacent_vertex in self.vertex_list[start].adjacency_list:
+            if not self.vertex_list[adjacent_vertex].visited:
+                edge_vertex_list = [adjacent_vertex, start]
+                edge_vertex_list.sort()
+                edge = next((edge for edge in self.edge_list if edge.vertex_list == edge_vertex_list), None)
+                if edge.weight + self.vertex_list[start].value < self.vertex_list[adjacent_vertex].value:
+                    self.vertex_list[adjacent_vertex].value = edge.weight + self.vertex_list[start].value
+                    self.vertex_list[adjacent_vertex].parent = start
+        unvisited_vertex_list = [vertex for vertex in self.vertex_list if not vertex.visited]
+        if unvisited_vertex_list:
+            minimum_value_vertex = min(unvisited_vertex_list, key=attrgetter('value'))
+            if minimum_value_vertex.value == float("inf"):
+                return
+            self.dijkstra_algorithm_helper(minimum_value_vertex.label)
 
     def attain_reliability_for_diameter(self, diameter, terminal_list=None):
         if not terminal_list:

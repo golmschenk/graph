@@ -1,0 +1,20 @@
+Greg Olmschenk
+CSC 85020 - All Projects
+
+For project 1 and 2, I have created a simple command user interface to interact with.
+To run this, simply run the main.py file (Python 3 required).
+
+You will be able to both manually create graphs via the prompt or have the option
+to load them from a file. The program will then allow you to pick if you want to
+see whether or not there are cycles, getting the shortest paths via Dijkstra's
+algorithm, or find the reliability of the graph using backtracking. The reliability
+also allows for multiple terminal vertices (as is an option for extra credit).
+
+Project 3 on the website appeared not to be for this class, but I just did it quickly
+anyway. To run this program, run the average_case.py file.
+
+Note: I wasn't entirely sure how you wanted 2D wireless mesh graphs to be generated.
+I simply made my program accept a file containing 2D coordinates. This creates the
+vertices along with all the edges with the weight of each edge being the distance
+between the points and the reliability of each edge being inversely proportional
+to the distance.
