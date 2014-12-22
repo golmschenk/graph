@@ -8,6 +8,8 @@ from operator import attrgetter
 
 
 class Graph():
+    edge_boolean_list_list = []
+
     def __init__(self):
         self.number_of_vertices = 0
         self.number_of_edges = 0
@@ -233,6 +235,11 @@ class Graph():
             self.dijkstra_algorithm_helper(minimum_value_vertex.label)
 
     def attain_reliability_for_diameter(self, diameter, terminal_list=None):
+        edge_boolean_list = self.get_edge_boolean_list()
+        if edge_boolean_list in Graph.edge_boolean_list_list:
+            return 0
+        else:
+            Graph.edge_boolean_list_list.append(edge_boolean_list)
         if not terminal_list:
             terminal_list = [self.number_of_vertices - 1]
         self.breadth_first_search(0)
@@ -268,6 +275,7 @@ class Graph():
             edge.removed = False
         self.queue = []
         self.has_a_cycle = False
+        Graph.edge_boolean_list_list = []
 
     def clone_with_edge_removed(self, edge_to_remove):
         subgraph = Graph()
@@ -286,11 +294,17 @@ class Graph():
                 edge.removed = True
         return subgraph
 
+    def get_edge_boolean_list(self):
+        edge_boolean_list = []
+        for edge in self.edge_list:
+            edge_boolean_list.append(edge.removed)
+        return edge_boolean_list
+
 
 if __name__ == "__main__":
-    graph = Graph.create_reliability_graph_from_csv("examplegraphs/quarter_success_mini_graph.csv")
+    graph = Graph.create_reliability_graph_from_csv("examplegraphs/petingi_graph.csv")
     #graph = Graph.create_wireless_mesh_graph_from_csv("examplegraphs/basic_wireless_mesh_graph.csv")
-    r = graph.attain_reliability_for_diameter(4, terminal_list=[1,2])
+    r = graph.attain_reliability_for_diameter(5, terminal_list=[4])
     print(r)
     #graph = Graph.create_weighted_graph_from_csv("examplegraphs/basic_weighted_graph.csv")
     #graph.breadth_first_search(0)
